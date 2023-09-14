@@ -1,0 +1,41 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Aplicaciones {
+  IDCiudadano     String     @db.VarChar(20)
+  IDVacante       String     @db.VarChar(20)
+  FechaAplicacion DateTime?  @db.Date
+  Ciudadanos      Ciudadanos @relation(fields: [IDCiudadano], references: [Cedula], onDelete: NoAction, onUpdate: NoAction, map: "Aplicaciones_ibfk_1")
+  Vacantes        Vacantes   @relation(fields: [IDVacante], references: [Codigo], onDelete: NoAction, onUpdate: NoAction, map: "Aplicaciones_ibfk_2")
+
+  @@id([IDCiudadano, IDVacante])
+  @@index([IDVacante], map: "IDVacante")
+}
+
+model Ciudadanos {
+  TipoDocumento      String?        @db.VarChar(50)
+  Cedula             String         @id @db.VarChar(20)
+  Nombres            String?        @db.VarChar(100)
+  Apellidos          String?        @db.VarChar(100)
+  FechaNacimiento    DateTime?      @db.Date
+  Profesion          String?        @db.VarChar(100)
+  AspiracionSalarial Decimal?       @db.Decimal(10, 2)
+  CorreoElectronico  String?        @db.VarChar(100)
+  Aplicaciones       Aplicaciones[]
+}
+
+model Vacantes {
+  Codigo           String         @id @db.VarChar(20)
+  Cargo            String?        @db.VarChar(100)
+  Descripcion      String?        @db.Text
+  Salario          Decimal?       @db.Decimal(10, 2)
+  Empresa          String?        @db.VarChar(100)
+  FechaPublicacion DateTime?      @db.Date
+  Aplicaciones     Aplicaciones[]
+}
